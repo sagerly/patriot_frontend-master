@@ -1,20 +1,41 @@
 import React, { useState } from 'react';
 
 const AddNewCall = () => {
-  const [isNewCallPopupVisible, setNewCallPopupVisible] = useState(false);
-
-  const showNewCallPopup = () => {
-    setNewCallPopupVisible(true);
-  };
+  const [isNewCallPopupVisible, setNewCallPopupVisible] = useState(true); // Form pops up immediately
+  const [callType, setCallType] = useState('');
+  const [description, setDescription] = useState('');
+  const [assignedOfficers, setAssignedOfficers] = useState([]);
 
   const closeNewCallPopup = () => {
     setNewCallPopupVisible(false);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Replace with your API endpoint and adjust the body as needed for your backend
+    fetch('http://localhost:8000/api/current_calls/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        call_type: callType,
+        description: description,
+        assigned_officers: assignedOfficers,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+      closeNewCallPopup();
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  };
+
   return (
     <div>
-      <button onClick={showNewCallPopup}>Add New Call</button>
-
       {isNewCallPopupVisible && (
         <div className="popup">
           <div className="popup-content">
@@ -22,43 +43,35 @@ const AddNewCall = () => {
               X
             </button>
             <h2>Add New Call:</h2>
-            <form>
-              <input type="text" placeholder="Call Type" />
-              <input type="text" placeholder="Description" />
-              <button type="submit">Submit</button>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                placeholder="Call Type"
+                value={callType}
+                onChange={(e) => setCallType(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <select
+                multiple
+                value={assignedOfficers}
+                onChange={(e) => setAssignedOfficers([...e.target.selectedOptions].map(o => o.value))}
+              >
+                {/* Options should be generated based on available officers. Example: */}
+                <option value="1">Officer 1</option>
+                <option value="2">Officer 2</option>
+                {/* ... other options ... */}
+              </select>
+              <button type="submit">Create Call</button>
             </form>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .popup {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: rgba(0, 0, 0, 0.8);
-          padding: 20px;
-          border: 1px solid #ccc;
-          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-          color: white;
-        }
-
-        .popup-content {
-          text-align: center;
-        }
-
-        .close-button {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 18px;
-          color: white;
-        }
-      `}</style>
+      {/* ... existing styles ... */}
     </div>
   );
 };
