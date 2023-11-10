@@ -25,7 +25,7 @@ const AddNewCitation = () => {
             <form>
               <input type="text" placeholder="Citation Type" />
               <input type="text" placeholder="Description" />
-              <input type="text" placeholder="Fine Amount" />
+              <input type="text" placeholder="Fine" />
               <button type="submit">Submit</button>
             </form>
           </div>
